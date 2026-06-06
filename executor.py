@@ -9,7 +9,7 @@ log = get_logger("Executor")
 class CommandExecutor:
     def __init__(self):
         self.denied_command = ["rm", "shutdown", "reboot", "poweroff", "mkfs", "dd"]
-        self.pattern = r"\[!(.+?)\]"
+        self.pattern = r"\[!([\s\S]+?)\]"
 
     def extract_commands(self, text: str) -> tuple[str, list[str]]:
         extract_cmds = re.findall(self.pattern, text)
@@ -20,21 +20,8 @@ class CommandExecutor:
     def filter_commands(self, command: str) -> bool:
         if not command:
             return False
-
-        try:
-            parts = shlex.split(command)
-            if not parts:
-                return False
-
-            base_command = parts[0].lower()
-
-            if base_command in self.denied_command:
-                return False
-
-            return True
-        except:
-            return False
-
+        first_word = command.strip().split()[0].lower()
+        return first_word not in self.denied_command
     def execute_commands(self, command: str) -> str:
         if not self.filter_commands(command):
             log.warning(f"Forbidden executing: {command}")
@@ -44,9 +31,10 @@ class CommandExecutor:
 
             result = subprocess.run(
                 args,
-                timeout=10,
+                timeout=20,
                 text=True,
                 capture_output=True,
+                shell=True,
             )
 
             if result.returncode == 0:

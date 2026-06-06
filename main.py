@@ -1,4 +1,6 @@
 from time import sleep
+
+import ollama
 from google import genai
 from google.genai import types
 from pathlib import Path
@@ -15,6 +17,7 @@ log = get_logger("Main")
 class Assistant:
     def __init__(self, model: str, use_local: bool = False):
         self.executor = CommandExecutor()
+        self.use_local = use_local
 
         pygame.mixer.init()
         self.voice_character = "en-US-AvaNeural"
@@ -26,7 +29,7 @@ class Assistant:
         with open(instruction_path, 'r') as file:
             self.instruction = file.read().strip()
 
-        if use_local:
+        if self.use_local:
             self._init_ollama(model)
         else:
             self._init_gemini(model or "gemini-2.5-flash")
@@ -55,6 +58,7 @@ class Assistant:
 
     def start_talking(self):
         print("Welcome back, master!")
+        asyncio.run(self.speak("Welcome back, Master!"))
 
         while (user_input := input("Send message: ")) != "exit":
             try:
@@ -70,8 +74,15 @@ class Assistant:
 
     def send_message(self, message: str) -> str:
         try:
-            response = self.chat.send_message(message)
-            return response.text
+            if self.use_local:
+                self.history.append({"role": "user", "content": message})
+                response = self.ollama.chat(model=self.model, messages=self.history)
+                reply = response["message"]["content"]
+                self.history.append({"role": "assistant", "content": reply})
+                return reply
+            else:
+                response = self.chat.send_message(message)
+                return response.text
         except Exception as e:
             return f"An error occured while connecting: {e}"
 
@@ -117,5 +128,5 @@ class Assistant:
             asyncio.run(self.speak(analysis_reply))
 
 if __name__ == "__main__":
-    bot = Assistant()
+    bot = Assistant("qwen2.5:7b", use_local=True)
     bot.start_talking()
