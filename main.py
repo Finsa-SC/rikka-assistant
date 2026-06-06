@@ -14,16 +14,11 @@ log = get_logger("Main")
 
 class Assistant:
     def __init__(self, model: str = "gemini-2.5-flash"):
-        if not os.environ.get("GEMINI_API_KEY"):
-            print("Api key not set yet")
-            exit(0)
         self.executor = CommandExecutor()
 
         pygame.mixer.init()
         self.voice_character = "en-US-AvaNeural"
 
-        self.client = genai.Client()
-        self.model = model
 
         instruction_path = Path("instruction.txt")
         if not instruction_path.exists():
@@ -31,15 +26,30 @@ class Assistant:
             exit(0)
 
         with open(instruction_path, 'r') as file:
-            instruction = file.read().strip()
+            self.instruction = file.read().strip()
+
+
+    def _init_gemini(self, model: str):
+        if not os.environ.get("GEMINI_API_KEY"):
+            print("Api key not set yet")
+            exit(0)
+
+        self.client = genai.Client()
+        self.model = model
 
         self.chat = self.client.chats.create(
             model=self.model,
             config=types.GenerateContentConfig(
-                system_instruction=instruction,
+                system_instruction=self.instruction,
                 temperature=0.7
             )
         )
+
+    def _init_ollama(self, model: str):
+        import ollama
+        self.ollama = ollama
+        self.model = model
+        self.history = [{"role": "system", "content": self.instruction}]
 
     def start_talking(self):
         print("Welcome back, master!")

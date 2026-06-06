@@ -5,5 +5,6 @@ requires-python = ">=3.10"
 dependencies = [
     "edge-tts>=7.2.8",
     "google-genai>=2.8.0",
+    "ollama>=0.6.2",
     "pygame>=2.6.1",
 ]
