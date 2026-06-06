@@ -13,21 +13,23 @@ from executor import CommandExecutor
 log = get_logger("Main")
 
 class Assistant:
-    def __init__(self, model: str = "gemini-2.5-flash"):
+    def __init__(self, model: str, use_local: bool = False):
         self.executor = CommandExecutor()
 
         pygame.mixer.init()
         self.voice_character = "en-US-AvaNeural"
 
-
         instruction_path = Path("instruction.txt")
         if not instruction_path.exists():
             print("Instruction file does not exist")
             exit(0)
-
         with open(instruction_path, 'r') as file:
             self.instruction = file.read().strip()
 
+        if use_local:
+            self._init_ollama(model)
+        else:
+            self._init_gemini(model or "gemini-2.5-flash")
 
     def _init_gemini(self, model: str):
         if not os.environ.get("GEMINI_API_KEY"):
