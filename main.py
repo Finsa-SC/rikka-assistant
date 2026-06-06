@@ -20,7 +20,13 @@ class Assistant:
         self.client = genai.Client()
         self.model = model
 
-        instruction = "You are an obedient assistant to your master, you never want to make a mistake let alone a fatal misfortune to your master"
+        instruction_path = Path("instruction.txt")
+        if not instruction_path.exists():
+            print("Instruction file does not exist")
+            exit(0)
+
+        with open(instruction_path, 'r') as file:
+            instruction = file.read().strip()
 
         self.chat = self.client.chats.create(
             model=self.model,
