@@ -8,11 +8,14 @@ from pathlib import Path
 import os
 import asyncio
 
+from executor import CommandExecutor
+
 class Assistant:
     def __init__(self, model: str = "gemini-2.5-flash"):
         if not os.environ.get("GEMINI_API_KEY"):
             print("Api key not set yet")
             exit(0)
+        self.executor = CommandExecutor()
 
         pygame.mixer.init()
         self.voice_character = "en-US-AvaNeural"
@@ -76,6 +79,18 @@ class Assistant:
 
         except Exception as e:
             print(f"An error occured while trying to play sound: {e}")
+
+    def execute_command(self, text: str):
+        print("=== TEST EXTRAK ===")
+        c_text, cmds = self.executor.extract_commands(text)
+        print(f"Clean Text: {c_text}")
+        print(f"Extracted Commands: {cmds}\n")
+
+        print("=== TEST EKSEKUSI ===")
+        for c in cmds:
+            print(f"Executing '{c}'...")
+            output = self.executor.execute_commands(c)
+            print(f"Result:\n{output}\n")
 
 if __name__ == "__main__":
     bot = Assistant()
