@@ -1,14 +1,16 @@
 from time import sleep
 from google import genai
 from google.genai import types
-import pygame
-import edge_tts
 from pathlib import Path
 
-import os
-import asyncio
+import pygame
+import edge_tts
+import asyncio, os
 
+from logger import get_logger
 from executor import CommandExecutor
+
+log = get_logger("Main")
 
 class Assistant:
     def __init__(self, model: str = "gemini-2.5-flash"):
@@ -39,13 +41,6 @@ class Assistant:
             )
         )
 
-    def send_message(self, message: str) -> str:
-        try:
-            response = self.chat.send_message(message)
-            return response.text
-        except Exception as e:
-            return f"An error occured while connecting: {e}"
-
     def start_talking(self):
         print("Welcome back, master!")
 
@@ -54,13 +49,19 @@ class Assistant:
                 if not user_input.strip():
                     continue
 
-                reply = self.send_message(user_input)
-                print(f"Nino: {reply}")
-                asyncio.run(self.speak(reply))
+                raw_reply = self.send_message(user_input)
+                self.execute_command(raw_reply)
             except (Exception, EOFError) as e:
                 print("See you later, master!")
                 print(f"{e}")
                 break
+
+    def send_message(self, message: str) -> str:
+        try:
+            response = self.chat.send_message(message)
+            return response.text
+        except Exception as e:
+            return f"An error occured while connecting: {e}"
 
     async def speak(self, text: str):
         tts_file = "nino_voice.mp3"
@@ -80,17 +81,28 @@ class Assistant:
         except Exception as e:
             print(f"An error occured while trying to play sound: {e}")
 
-    def execute_command(self, text: str):
-        print("=== TEST EXTRAK ===")
-        c_text, cmds = self.executor.extract_commands(text)
-        print(f"Clean Text: {c_text}")
-        print(f"Extracted Commands: {cmds}\n")
+    def execute_command(self, raw_text):
+        clean_text, cmds = self.executor.extract_commands(raw_text)
 
-        print("=== TEST EKSEKUSI ===")
-        for c in cmds:
-            print(f"Executing '{c}'...")
-            output = self.executor.execute_commands(c)
-            print(f"Result:\n{output}\n")
+        if clean_text:
+            print(f"Nino: {clean_text}")
+            asyncio.run(self.speak(clean_text))
+
+        if cmds:
+            exec_results = []
+            for cmd in cmds:
+                log.info(f"Command request: {cmd}")
+                output = self.executor.execute_commands(cmd)
+
+                print(f"\n[System Execution Output for '{cmd}']\n{output}\n")
+                exec_results.append(f"Result of '{cmd}':\n{output}")
+
+            system_feedback = f"[SYSTEM_FEEDBACK]\n" + "\n".join(exec_results)
+            log.info("Send feedback to ai")
+            analysis_reply = self.send_message(system_feedback)
+
+            print(f"Nino (Analysis): {analysis_reply}")
+            asyncio.run(self.speak(analysis_reply))
 
 if __name__ == "__main__":
     bot = Assistant()

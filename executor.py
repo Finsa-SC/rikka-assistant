@@ -1,8 +1,10 @@
 import shlex
 import re
 import subprocess
-from subprocess import SubprocessError
 
+from logger import get_logger
+
+log = get_logger("Executor")
 
 class CommandExecutor:
     def __init__(self):
@@ -35,6 +37,7 @@ class CommandExecutor:
 
     def execute_commands(self, command: str) -> str:
         if not self.filter_commands(command):
+            log.warning(f"Forbidden executing: {command}")
             return f"Forbidden command {command}"
         try:
             args = shlex.split(command)
