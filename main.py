@@ -127,9 +127,6 @@ class Assistant:
             log.info("Send feedback to ai")
             analysis_reply = self.send_message(system_feedback)
 
-            print(f"Nino (Analysis): {analysis_reply}")
-            asyncio.run(self.speak(analysis_reply))
-
             self.execute_command(analysis_reply, depth + 1)
 
 if __name__ == "__main__":
