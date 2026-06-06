@@ -104,7 +104,10 @@ class Assistant:
         except Exception as e:
             print(f"An error occured while trying to play sound: {e}")
 
-    def execute_command(self, raw_text):
+    def execute_command(self, raw_text, depth: int = 0):
+        if depth > 5:
+            return
+
         clean_text, cmds = self.executor.extract_commands(raw_text)
 
         if clean_text:
@@ -127,6 +130,8 @@ class Assistant:
             print(f"Nino (Analysis): {analysis_reply}")
             asyncio.run(self.speak(analysis_reply))
 
+            self.execute_command(analysis_reply, depth + 1)
+
 if __name__ == "__main__":
-    bot = Assistant("qwen2.5:7b", use_local=True)
+    bot = Assistant("qwen2.5-coder:7b", use_local=True)
     bot.start_talking()

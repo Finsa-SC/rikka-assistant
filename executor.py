@@ -22,15 +22,14 @@ class CommandExecutor:
             return False
         first_word = command.strip().split()[0].lower()
         return first_word not in self.denied_command
+
     def execute_commands(self, command: str) -> str:
         if not self.filter_commands(command):
             log.warning(f"Forbidden executing: {command}")
             return f"Forbidden command {command}"
         try:
-            args = shlex.split(command)
-
             result = subprocess.run(
-                args,
+                command,
                 timeout=20,
                 text=True,
                 capture_output=True,
