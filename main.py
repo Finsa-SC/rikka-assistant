@@ -1,10 +1,8 @@
 from datetime import datetime
 from time import sleep
 
-import ollama
-from google import genai
-from google.genai import types
 from pathlib import Path
+from google.genai import types
 
 import pygame
 import edge_tts
@@ -19,6 +17,7 @@ class Assistant:
     def __init__(self, model: str, use_local: bool = False):
         self.executor = CommandExecutor()
         self.use_local = use_local
+        self.history = []
 
         pygame.mixer.init()
         self.voice_character = "en-US-AvaNeural"
@@ -40,20 +39,14 @@ class Assistant:
 
 
     def _init_gemini(self, model: str):
+        from google import genai
+
         if not os.environ.get("GEMINI_API_KEY"):
             print("Api key not set yet")
             exit(0)
 
         self.client = genai.Client()
         self.model = model
-
-        self.chat = self.client.chats.create(
-            model=self.model,
-            config=types.GenerateContentConfig(
-                system_instruction=self.instruction,
-                temperature=0.7
-            )
-        )
 
     def _init_ollama(self, model: str):
         import ollama
@@ -86,8 +79,34 @@ class Assistant:
                 self.history.append({"role": "assistant", "content": reply})
                 return reply
             else:
-                response = self.chat.send_message(message)
-                return response.text
+                formated_messages = []
+                for msg in self.history:
+                    role = "user" if msg["role"] == "user" else "model"
+                    formated_messages.append(
+                        types.Content(role=role, parts=[types.Part.from_text(text=msg["content"])])
+                    )
+                formated_messages.append(
+                    types.Content(role="user", parts=[types.Part.from_text(text=message)])
+                )
+
+                response = self.client.models.generate_content(
+                    model=self.model,
+                    contents=formated_messages,
+                    config=types.GenerateContentConfig(
+                        system_instruction=self.instruction,
+                        temperature=0.7
+                    )
+                )
+                reply = response.text
+
+                self.history.append({"role": "user", "content": message})
+                self.history.append({"role": "assistant", "content": reply})
+
+                if len(self.history) > 10:
+                    self.history = self.history[-10:]
+
+                return reply
+
         except Exception as e:
             return f"An error occured while connecting: {e}"
 

@@ -42,7 +42,6 @@ Thumbs.db
 # Kalau kamu simpan hasil scan/recon, jangan sampai ikut ke-push!
 *.dumpcap
 *.pcap
-*.log
 *.txt
 results/
 scans/
@@ -54,3 +53,5 @@ dist/
 build/
 *.egg-info/
 test.py
+*.mp3
+*.mp4
