@@ -85,8 +85,10 @@ class Assistant:
                     formated_messages.append(
                         types.Content(role=role, parts=[types.Part.from_text(text=msg["content"])])
                     )
+
+                clean_text = " ".join(message.split())
                 formated_messages.append(
-                    types.Content(role="user", parts=[types.Part.from_text(text=message)])
+                    types.Content(role="user", parts=[types.Part.from_text(text=clean_text)])
                 )
 
                 response = self.client.models.generate_content(
@@ -154,4 +156,5 @@ class Assistant:
 
 if __name__ == "__main__":
     bot = Assistant("qwen2.5-coder:7b", use_local=True)
+    #bot = Assistant("gemini-2.0-flash")
     bot.start_talking()

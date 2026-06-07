@@ -1,6 +1,6 @@
-import shlex
 import re
 import subprocess
+from time import sleep
 
 from logger import get_logger
 
@@ -47,17 +47,24 @@ class CommandExecutor:
             return self._run_foreground(command=command)
 
     @staticmethod
-    def _run_detached(command: str) -> str:
+    def _run_detached(command: str, check_delay: float = 1.5) -> str:
         try:
-            log.info(f"Launched in background: {command}")
             proc = subprocess.Popen(
                 command,
                 stdin=subprocess.DEVNULL,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
                 shell=True,
                 start_new_session=True,
             )
+            sleep(check_delay)
+            poll = proc.poll()
+            if poll is not None and poll != 0:
+                stderr = proc.stderr.read().decode(errors='replace').strip()
+                log.error(f"Detached process crashed (exit {poll}: {stderr}")
+                return f"Error (exit {poll}:\n{stderr}"
+
+            log.info(f"Launched in background: {command}")
             return f"Launch in background (PID {proc.pid})"
         except Exception as e:
             log.error(f"Error while launching detached command: {e}")
