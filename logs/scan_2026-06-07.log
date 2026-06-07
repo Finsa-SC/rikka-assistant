@@ -109,3 +109,4 @@ EOF
 2026-06-07 13:39:54,029 [ERROR] Executor: Command timeout while it is running
 2026-06-07 13:39:54,029 [INFO] Main: Send feedback to ai
 2026-06-07 13:40:48,388 [INFO] Main: Command request: sudo pacman -S youtube-dl!
+2026-06-07 14:21:58,515 [INFO] Main: Command request: {'cmd': 'mpv https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'mode': 'background'}

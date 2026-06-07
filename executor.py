@@ -44,10 +44,10 @@ class CommandExecutor:
         if mode == "background":
             return self._run_detached(command)
         else:
-            return self._run_foreground(command)
+            return self._run_foreground(command=command)
 
     @staticmethod
-    def _run_detached(self, command: str) -> str:
+    def _run_detached(command: str) -> str:
         try:
             log.info(f"Launched in background: {command}")
             proc = subprocess.Popen(
@@ -64,7 +64,7 @@ class CommandExecutor:
             return f"Error launching command: {e}"
 
     @staticmethod
-    def _run_foreground(self, command: str, timeout: float = 60) -> str:
+    def _run_foreground(command: str, timeout: float = 60) -> str:
         try:
             result = subprocess.run(
                 command,
