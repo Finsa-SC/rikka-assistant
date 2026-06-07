@@ -1,3 +1,4 @@
+from datetime import datetime
 from time import sleep
 
 import ollama
@@ -21,18 +22,22 @@ class Assistant:
 
         pygame.mixer.init()
         self.voice_character = "en-US-AvaNeural"
+        # self.voice_character = "ja-JP-NanamiNeural"
 
         instruction_path = Path("instruction.txt")
         if not instruction_path.exists():
             print("Instruction file does not exist")
             exit(0)
         with open(instruction_path, 'r') as file:
-            self.instruction = file.read().strip()
+            self.instr_file = file.read().strip()
+
+        self.instruction = f"[SYSTEM INFO] Current Time: {datetime.now()}\n\n{self.instr_file}"
 
         if self.use_local:
             self._init_ollama(model)
         else:
             self._init_gemini(model or "gemini-2.5-flash")
+
 
     def _init_gemini(self, model: str):
         if not os.environ.get("GEMINI_API_KEY"):

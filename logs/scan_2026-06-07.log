@@ -2,3 +2,52 @@
 2026-06-07 06:41:39,448 [INFO] Main: Send feedback to ai
 2026-06-07 06:46:16,049 [INFO] Main: Command request: pwd
 2026-06-07 06:46:16,062 [INFO] Main: Send feedback to ai
+2026-06-07 06:50:34,561 [INFO] Main: Command request: pwd!
+2026-06-07 06:50:34,568 [INFO] Main: Send feedback to ai
+2026-06-07 06:50:48,961 [INFO] Main: Command request: pwd
+2026-06-07 06:50:48,968 [INFO] Main: Send feedback to ai
+2026-06-07 06:51:53,231 [INFO] Main: Command request: cat << 'EOF' > hello.txt
+Hello, World!
+EOF
+2026-06-07 06:51:53,240 [INFO] Main: Send feedback to ai
+2026-06-07 06:52:47,256 [INFO] Main: Command request: sed -i 's/Hello, World!/Hello, Nino!/g' hello.txt
+2026-06-07 06:52:47,274 [INFO] Main: Send feedback to ai
+2026-06-07 06:53:32,368 [INFO] Main: Command request: rm hello.txt
+2026-06-07 06:53:32,368 [WARNING] Executor: Forbidden executing: rm hello.txt
+2026-06-07 06:53:32,369 [INFO] Main: Send feedback to ai
+2026-06-07 06:53:46,929 [INFO] Main: Command request: rm hello.txt
+2026-06-07 06:53:46,929 [WARNING] Executor: Forbidden executing: rm hello.txt
+2026-06-07 06:53:46,929 [INFO] Main: Send feedback to ai
+2026-06-07 06:54:42,665 [INFO] Main: Command request: ls
+2026-06-07 06:54:42,674 [INFO] Main: Send feedback to ai
+2026-06-07 06:56:07,799 [INFO] Main: Command request: cat hello.txt
+2026-06-07 06:56:07,809 [INFO] Main: Send feedback to ai
+2026-06-07 07:25:24,220 [INFO] Main: Command request: pwd
+2026-06-07 07:25:24,227 [INFO] Main: Send feedback to ai
+2026-06-07 07:26:28,242 [INFO] Main: Command request: ls -l | grep txt
+2026-06-07 07:26:28,262 [INFO] Main: Send feedback to ai
+2026-06-07 07:28:34,341 [INFO] Main: Command request: cat hello.txt
+2026-06-07 07:28:34,355 [INFO] Main: Send feedback to ai
+2026-06-07 07:29:26,615 [INFO] Main: Command request: sed -i 's/How are you today?/I am ready for this day/' hello.txt
+2026-06-07 07:29:26,633 [INFO] Main: Send feedback to ai
+2026-06-07 07:30:01,898 [INFO] Main: Command request: cat hello.txt
+2026-06-07 07:30:01,908 [INFO] Main: Send feedback to ai
+2026-06-07 07:33:32,487 [INFO] Main: Command request: pwd!
+2026-06-07 07:33:32,494 [INFO] Main: Send feedback to ai
+2026-06-07 07:33:44,798 [INFO] Main: Command request: pwd
+2026-06-07 07:33:44,809 [INFO] Main: Send feedback to ai
+2026-06-07 07:34:28,779 [INFO] Main: Command request: ls
+2026-06-07 07:34:28,788 [INFO] Main: Send feedback to ai
+2026-06-07 07:37:20,211 [INFO] Main: Command request: cat << 'EOF' > subdomains.txt
+api.finsky.my.id
+play.finsky.my.id
+app.finsky.my.id
+market.finsky.my.id
+support.finsky.my.id
+docs.finsky.my.id
+help.finsky.my.id
+blog.finsky.my.id
+EOF
+2026-06-07 07:37:20,220 [INFO] Main: Send feedback to ai
+2026-06-07 07:37:45,211 [INFO] Main: Command request: cat subdomains.txt
+2026-06-07 07:37:45,220 [INFO] Main: Send feedback to ai
