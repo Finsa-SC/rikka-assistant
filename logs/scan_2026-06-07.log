@@ -51,3 +51,61 @@ EOF
 2026-06-07 07:37:20,220 [INFO] Main: Send feedback to ai
 2026-06-07 07:37:45,211 [INFO] Main: Command request: cat subdomains.txt
 2026-06-07 07:37:45,220 [INFO] Main: Send feedback to ai
+2026-06-07 07:42:55,897 [INFO] Main: Command request: ls *.txt
+2026-06-07 07:42:55,907 [INFO] Main: Send feedback to ai
+2026-06-07 07:43:49,448 [INFO] Main: Command request: echo "new_subdomain.com" >> subdomains.txt
+2026-06-07 07:43:49,455 [INFO] Main: Send feedback to ai
+2026-06-07 07:47:00,532 [INFO] Main: Command request: which firefox
+2026-06-07 07:47:00,545 [INFO] Main: Send feedback to ai
+2026-06-07 07:47:55,974 [INFO] Main: Command request: xdg-settings get default-web-browser
+2026-06-07 07:47:56,111 [INFO] Main: Send feedback to ai
+2026-06-07 07:49:09,393 [INFO] Main: Command request: ls /usr/local/bin
+2026-06-07 07:49:09,402 [INFO] Main: Send feedback to ai
+2026-06-07 07:50:15,167 [INFO] Main: Command request: which code
+2026-06-07 07:50:15,175 [INFO] Main: Send feedback to ai
+2026-06-07 07:50:51,131 [INFO] Main: Command request: echo $DESKTOP_SESSION
+2026-06-07 07:50:51,138 [INFO] Main: Send feedback to ai
+2026-06-07 07:51:18,696 [INFO] Main: Command request: code
+2026-06-07 07:51:19,335 [INFO] Main: Send feedback to ai
+2026-06-07 07:53:04,806 [INFO] Main: Command request: mpv 'ytsearch:lofi hip hop'
+2026-06-07 07:53:05,108 [INFO] Main: Send feedback to ai
+2026-06-07 07:54:06,720 [INFO] Main: Command request: sudo pacman -S mpv
+2026-06-07 07:54:26,736 [INFO] Main: Command request: sudo pacman -S youtube-dl
+2026-06-07 07:54:46,760 [INFO] Main: Send feedback to ai
+2026-06-07 07:55:18,247 [INFO] Main: Command request: sudo pacman -Syu
+2026-06-07 07:55:32,625 [INFO] Main: Command request: sudo pacman -S mpv youtube-dl
+2026-06-07 07:55:33,225 [INFO] Main: Send feedback to ai
+2026-06-07 07:56:09,791 [INFO] Main: Command request: sudo pacman -S yt-dlp
+2026-06-07 07:56:29,814 [INFO] Main: Command request: mpv 'ytsearch:lofi hip hop'
+2026-06-07 07:56:30,034 [INFO] Main: Send feedback to ai
+2026-06-07 07:56:53,616 [INFO] Main: Command request: sudo pacman -Syu
+2026-06-07 07:56:53,675 [INFO] Main: Command request: sudo pacman -S yt-dlp
+2026-06-07 07:56:53,734 [INFO] Main: Send feedback to ai
+2026-06-07 07:58:05,743 [INFO] Main: Command request: rm /var/lib/pacman/db.lck
+2026-06-07 07:58:05,743 [WARNING] Executor: Forbidden executing: rm /var/lib/pacman/db.lck
+2026-06-07 07:58:05,743 [INFO] Main: Command request: sudo pacman -Syu
+2026-06-07 07:58:05,802 [INFO] Main: Command request: sudo pacman -S yt-dlp
+2026-06-07 07:58:05,860 [INFO] Main: Command request: mpv 'ytsearch:lofi hip hop'
+2026-06-07 07:58:06,081 [INFO] Main: Send feedback to ai
+2026-06-07 08:01:19,902 [INFO] Main: Command request: mpv --version
+2026-06-07 08:01:20,096 [INFO] Main: Command request: mpv --audio-device-list
+2026-06-07 08:01:20,264 [ERROR] Executor: Error occured while executing command
+2026-06-07 08:01:20,264 [INFO] Main: Command request: mpv /path/to/your/mediafile.mp3
+2026-06-07 08:01:20,487 [ERROR] Executor: Error occured while executing command
+2026-06-07 08:01:20,487 [INFO] Main: Send feedback to ai
+2026-06-07 13:28:41,445 [INFO] Main: Command request: sudo pacman -S youtube-dl
+2026-06-07 13:31:04,697 [INFO] Main: Command request: mpv --ytdl https://www.youtube.com/watch?v=YOUR_VIDEO_ID
+2026-06-07 13:31:07,083 [ERROR] Executor: Error occured while executing command
+2026-06-07 13:31:07,083 [INFO] Main: Command request: mpv --ytdl https://www.youtube.com/watch?v=dQw4w9WgXcQ
+2026-06-07 13:31:27,146 [ERROR] Executor: Command timeout while it is running
+2026-06-07 13:31:27,147 [INFO] Main: Send feedback to ai
+2026-06-07 13:32:39,968 [INFO] Main: Command request: yt-dlp --extract-audio --audio-format mp3 https://www.youtube.com/watch?v=dQw4w9WgXcQ | ffmpeg -i pipe:0 -f m3u8 -
+2026-06-07 13:32:52,026 [ERROR] Executor: Error occured while executing command
+2026-06-07 13:32:52,026 [INFO] Main: Send feedback to ai
+2026-06-07 13:34:47,461 [INFO] Main: Command request: yt-dlp --yes-playlist -f best https://www.youtube.com/watch?v=dQw4w9WgXcQ | mpv -
+2026-06-07 13:35:07,477 [ERROR] Executor: Command timeout while it is running
+2026-06-07 13:35:07,478 [INFO] Main: Send feedback to ai
+2026-06-07 13:39:33,972 [INFO] Main: Command request: mpv https://www.youtube.com/watch?v=dQw4w9WgXcQ!
+2026-06-07 13:39:54,029 [ERROR] Executor: Command timeout while it is running
+2026-06-07 13:39:54,029 [INFO] Main: Send feedback to ai
+2026-06-07 13:40:48,388 [INFO] Main: Command request: sudo pacman -S youtube-dl!

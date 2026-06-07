@@ -10,6 +10,7 @@ class CommandExecutor:
     def __init__(self):
         self.denied_command = ["rm", "shutdown", "reboot", "poweroff", "mkfs", "dd"]
         self.pattern = r"\[!([\s\S]+?)\]"
+        self.bg_pattern = r"\[~([\s\S]+?)~\]"
 
     def extract_commands(self, text: str) -> tuple[str, list[str]]:
         extract_cmds = re.findall(self.pattern, text)
@@ -39,10 +40,13 @@ class CommandExecutor:
             if result.returncode == 0:
                 return result.stdout.strip() if result.stdout.strip() else "Success without output"
             else:
+                log.error(f"Error occured while executing command")
                 return f"Error occured while executing command: \n{result.stderr.strip()}"
         except subprocess.TimeoutExpired:
+            log.error(f"Command timeout while it is running")
             return f"Command timeout while it is running"
         except Exception as e:
+            log.error(f"Error occured while executing command: {e}")
             return f"Error occured while executing command: {e}"
 
 

@@ -62,10 +62,10 @@ class Assistant:
         self.history = [{"role": "system", "content": self.instruction}]
 
     def start_talking(self):
-        print("Welcome back, master!")
-        asyncio.run(self.speak("Welcome back, Master!"))
+        print("Welcome a board, master!")
+        asyncio.run(self.speak("Welcome a board, Master!. All systems online"))
 
-        while (user_input := input("Send message: ")) != "exit":
+        while (user_input := input("Send message: ")) != "q":
             try:
                 if not user_input.strip():
                     continue
@@ -125,7 +125,6 @@ class Assistant:
                 log.info(f"Command request: {cmd}")
                 output = self.executor.execute_commands(cmd)
 
-                print(f"\n[System Execution Output for '{cmd}']\n{output}\n")
                 exec_results.append(f"Result of '{cmd}':\n{output}")
 
             system_feedback = f"[SYSTEM_FEEDBACK]\n" + "\n".join(exec_results)
