@@ -70,7 +70,7 @@ class Assistant:
                 print(f"{e}")
                 break
 
-    def send_message(self, message: str, save_message: bool = True) -> str:
+    def send_message(self, message: str, save_history: bool = True) -> str:
         try:
             if self.use_local:
                 self.history.append({"role": "user", "content": message})
@@ -151,7 +151,7 @@ class Assistant:
 
             system_feedback = f"[SYSTEM_FEEDBACK]\n" + "\n".join(exec_results)
             log.info("Send feedback to ai")
-            analysis_reply = self.send_message(system_feedback)
+            analysis_reply = self.send_message(system_feedback, save_history=False)
 
             self.execute_command(analysis_reply, depth + 1)
 
