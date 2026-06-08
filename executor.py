@@ -9,8 +9,8 @@ log = get_logger("Executor")
 class CommandExecutor:
     def __init__(self):
         self.denied_command = ["rm", "shutdown", "reboot", "poweroff", "mkfs", "dd"]
-        self.fg_pattern = r"\[!([\s\S]+?)\]"
-        self.bg_pattern = r"\[~([\s\S]+?)~\]"
+        self.fg_pattern = r"<RUN>([\s\S]+?)<\/RUN>"
+        self.bg_pattern = r"<SPAWN>([\s\S]+?)<\/SPAWN>"
 
     def extract_commands(self, text: str) -> tuple[str, list[str]]:
         fg_cmds = re.findall(self.fg_pattern, text)

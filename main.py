@@ -70,7 +70,7 @@ class Assistant:
                 print(f"{e}")
                 break
 
-    def send_message(self, message: str) -> str:
+    def send_message(self, message: str, save_message: bool = True) -> str:
         try:
             if self.use_local:
                 self.history.append({"role": "user", "content": message})
@@ -101,8 +101,9 @@ class Assistant:
                 )
                 reply = response.text
 
-                self.history.append({"role": "user", "content": message})
-                self.history.append({"role": "assistant", "content": reply})
+                if save_history:
+                    self.history.append({"role": "user", "content": message})
+                    self.history.append({"role": "assistant", "content": reply})
 
                 if len(self.history) > 10:
                     self.history = self.history[-10:]

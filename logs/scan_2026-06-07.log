@@ -179,3 +179,57 @@ ls: cannot access '*gif!': No such file or directory
 2026-06-07 16:26:34,715 [INFO] Main: Command request: {'cmd': 'mpv https://www.youtube.com/watch?v=lofi_id', 'mode': 'background'}
 2026-06-07 16:26:34,715 [INFO] Executor: Launched in background: mpv https://www.youtube.com/watch?v=lofi_id
 2026-06-07 16:26:34,716 [INFO] Main: Send feedback to ai
+2026-06-07 16:39:17,408 [INFO] Main: Command request: {'cmd': 'date!', 'mode': 'foreground'}
+2026-06-07 16:39:17,420 [ERROR] Executor: Command error: /bin/sh: line 1: date!: command not found
+
+2026-06-07 16:39:17,420 [INFO] Main: Send feedback to ai
+2026-06-07 16:39:26,828 [INFO] Main: Command request: {'cmd': 'date +%T!', 'mode': 'foreground'}
+2026-06-07 16:39:26,835 [INFO] Main: Send feedback to ai
+2026-06-07 16:42:18,725 [INFO] Main: Command request: {'cmd': 'ip a!', 'mode': 'foreground'}
+2026-06-07 16:42:18,743 [ERROR] Executor: Command error: Object "a!" is unknown, try "ip help".
+
+2026-06-07 16:42:18,743 [INFO] Main: Send feedback to ai
+2026-06-07 16:42:22,248 [INFO] Main: Command request: {'cmd': 'ip addr show!', 'mode': 'foreground'}
+2026-06-07 16:42:22,256 [ERROR] Executor: Command error: Command "show!" is unknown, try "ip address help".
+
+2026-06-07 16:42:22,256 [INFO] Main: Send feedback to ai
+2026-06-07 16:42:26,072 [INFO] Main: Command request: {'cmd': 'ip -4 addr show!', 'mode': 'foreground'}
+2026-06-07 16:42:26,079 [ERROR] Executor: Command error: Command "show!" is unknown, try "ip address help".
+
+2026-06-07 16:42:26,079 [INFO] Main: Send feedback to ai
+2026-06-07 16:42:29,718 [INFO] Main: Command request: {'cmd': 'ip addr list!', 'mode': 'foreground'}
+2026-06-07 16:42:29,726 [ERROR] Executor: Command error: Command "list!" is unknown, try "ip address help".
+
+2026-06-07 16:42:29,726 [INFO] Main: Send feedback to ai
+2026-06-07 16:42:33,511 [INFO] Main: Command request: {'cmd': 'ip -4 addr show!', 'mode': 'foreground'}
+2026-06-07 16:42:33,519 [ERROR] Executor: Command error: Command "show!" is unknown, try "ip address help".
+
+2026-06-07 16:42:33,519 [INFO] Main: Send feedback to ai
+2026-06-07 16:42:37,212 [INFO] Main: Command request: {'cmd': 'ip addr list!', 'mode': 'foreground'}
+2026-06-07 16:42:37,220 [ERROR] Executor: Command error: Command "list!" is unknown, try "ip address help".
+
+2026-06-07 16:42:37,220 [INFO] Main: Send feedback to ai
+2026-06-07 16:46:48,012 [INFO] Main: Command request: {'cmd': 'date +"%H:%M:%S"', 'mode': 'foreground'}
+2026-06-07 16:46:48,019 [INFO] Main: Send feedback to ai
+2026-06-07 16:47:18,527 [INFO] Main: Command request: {'cmd': 'cat /etc/os-release | grep "NAME" | cut -d "=" -f2 | tr -d "\\""', 'mode': 'foreground'}
+2026-06-07 16:47:18,541 [INFO] Main: Send feedback to ai
+2026-06-07 16:47:38,458 [INFO] Main: Command request: {'cmd': 'cat /etc/os-release | grep "VERSION" | cut -d "=" -f2 | tr -d "\\""', 'mode': 'foreground'}
+2026-06-07 16:47:38,469 [INFO] Main: Send feedback to ai
+2026-06-07 16:48:15,373 [INFO] Main: Command request: {'cmd': 'cat /etc/os-release | grep "VERSION_ID" | cut -d "=" -f2 | tr -d "\\""', 'mode': 'foreground'}
+2026-06-07 16:48:15,385 [INFO] Main: Send feedback to ai
+2026-06-07 16:48:47,913 [INFO] Main: Command request: {'cmd': 'lscpu', 'mode': 'foreground'}
+2026-06-07 16:48:47,942 [INFO] Main: Send feedback to ai
+2026-06-07 16:53:50,680 [INFO] Main: Command request: {'cmd': 'wget https://example.com/path/to/image.jpg', 'mode': 'foreground'}
+2026-06-07 16:53:50,969 [ERROR] Executor: Command error: --2026-06-07 16:53:50--  https://example.com/path/to/image.jpg
+Loaded CA certificate '/etc/ssl/certs/ca-certificates.crt'
+Resolving example.com (example.com)... 2606:4700:10::6814:179a, 2606:4700:10::ac42:93f3, 172.66.147.243, ...
+Connecting to example.com (example.com)|2606:4700:10::6814:179a|:443... connected.
+HTTP request sent, awaiting response... 404 Not Found
+2026-06-07 16:53:50 ERROR 404: Not Found.
+
+
+2026-06-07 16:53:50,969 [INFO] Main: Command request: {'cmd': 'sudo pacman -S feh imagemagick', 'mode': 'foreground'}
+2026-06-07 16:55:02,843 [INFO] Main: Command request: {'cmd': 'wine ~/.wine/drive_c/Program\\ Files/Mozilla/Firefox/firefox.exe', 'mode': 'background'}
+2026-06-07 16:55:04,347 [ERROR] Executor: Detached process crashed (exit 127: /bin/sh: line 1: wine: command not found
+2026-06-07 16:55:04,347 [INFO] Main: Send feedback to ai
+2026-06-07 16:55:30,521 [INFO] Main: Command request: {'cmd': 'sudo pacman -S --needed wine', 'mode': 'foreground'}

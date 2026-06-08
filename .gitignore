@@ -55,3 +55,4 @@ build/
 test.py
 *.mp3
 *.mp4
+logs
