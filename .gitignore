@@ -53,3 +53,5 @@ wordlists/
 dist/
 build/
 *.egg-info/
+logs/
+test.py
