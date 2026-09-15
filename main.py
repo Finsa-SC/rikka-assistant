@@ -20,7 +20,8 @@ class Assistant:
         self.history = []
 
         pygame.mixer.init()
-        self.voice_character = "en-US-AvaNeural"
+        # self.voice_character = "en-US-AvaNeural"
+        self.voice_character = "id-ID-GadisNeural"
         # self.voice_character = "ja-JP-NanamiNeural"
 
         instruction_path = Path("instruction.txt")
@@ -39,9 +40,14 @@ class Assistant:
 
 
     def _init_gemini(self, model: str):
-        from google import genai
+        print("Using gemini api")
 
-        if not os.environ.get("GEMINI_API_KEY"):
+        from google import genai
+        from dotenv import load_dotenv
+
+        load_dotenv()
+
+        if not os.getenv("GEMINI_API_KEY"):
             print("Api key not set yet")
             exit(0)
 
@@ -49,14 +55,18 @@ class Assistant:
         self.model = model
 
     def _init_ollama(self, model: str):
+        print("Using local ai")
+
         import ollama
         self.ollama = ollama
         self.model = model
         self.history = [{"role": "system", "content": self.instruction}]
 
+
     def start_talking(self):
         print("Welcome a board, master!")
-        asyncio.run(self.speak("Welcome a board, Master!. All systems online"))
+        # asyncio.run(self.speak("Welcome a board, Master!. All systems online"))
+        asyncio.run(self.speak("Selamat datang kembali master!. All systems online"))
 
         while (user_input := input("Send message: ")) != "q":
             try:
@@ -114,7 +124,7 @@ class Assistant:
             return f"An error occured while connecting: {e}"
 
     async def speak(self, text: str):
-        tts_file = "nino_voice.mp3"
+        tts_file = "miko_voice.mp3"
         try:
             communicate = edge_tts.Communicate(text=text, voice=self.voice_character)
             await communicate.save(tts_file)
@@ -138,7 +148,7 @@ class Assistant:
         clean_text, cmds = self.executor.extract_commands(raw_text)
 
         if clean_text:
-            print(f"Nino: {clean_text}")
+            print(f"Miko: {clean_text}")
             asyncio.run(self.speak(clean_text))
 
         if cmds:
@@ -156,6 +166,6 @@ class Assistant:
             self.execute_command(analysis_reply, depth + 1)
 
 if __name__ == "__main__":
-    bot = Assistant("qwen2.5-coder:7b", use_local=True)
-    #bot = Assistant("gemini-2.0-flash")
+    # bot = Assistant("qwen2.5-coder:7b", use_local=True)
+    bot = Assistant("gemini-3.6-flash")
     bot.start_talking()

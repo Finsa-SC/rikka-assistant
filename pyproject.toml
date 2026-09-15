@@ -3,6 +3,7 @@ name = "assistant"
 version = "0.1.0"
 requires-python = ">=3.10"
 dependencies = [
+    "dotenv>=0.9.9",
     "edge-tts>=7.2.8",
     "google-genai>=2.8.0",
     "ollama>=0.6.2",
