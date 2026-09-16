@@ -1,11 +1,11 @@
 from pathlib import Path
 from time import sleep
-from openai import OpenAI
 import edge_tts, pygame, asyncio, os
 from dotenv import load_dotenv
 
 from .executor import CommandExecutor
 from logger import get_logger
+from ai_models import use_openrouter
 
 log = get_logger(__name__)
 
@@ -14,28 +14,15 @@ API_KEY: str = os.getenv("API_KEY")
 MODEL: str = os.getenv("MODEL")
 VOICE_ACTOR: str = os.getenv("VOICE_ACTOR")
 
-def send_message(message: str, save_history: bool = True) -> str|None:
+def send_message(message: str) -> str|None:
     try:
-        client = OpenAI(
-            base_url="https://openrouter.ai/api/v1",
-            api_key=API_KEY,
-        )
-
-        parent_dir = Path(__file__).resolve().parents[1]
-        instruction_path = parent_dir / "instruction.txt"
-
-        with instruction_path.open('r') as file:
-            system_prompt = file.read()
-
-        response = client.chat.completions.create(
+        response = use_openrouter(
+            message,
             model=MODEL,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": message},
-            ]
+            api_key=API_KEY
         )
-        return response.choices[0].message.content
 
+        return response
     except Exception as e:
         return f"An error occured while connecting: {e}"
 
@@ -78,6 +65,6 @@ def execute_command(raw_text, depth: int = 0):
 
         system_feedback = f"[SYSTEM_FEEDBACK]\n" + "\n".join(exec_results)
         log.info("Send feedback to ai")
-        analysis_reply = send_message(system_feedback, save_history=False)
+        analysis_reply = send_message(system_feedback)
 
         execute_command(analysis_reply, depth + 1)
