@@ -4,18 +4,24 @@ from openai import OpenAI
 import edge_tts, pygame, asyncio, os
 from dotenv import load_dotenv
 
-load_dotenv()
-API_KEY: str = os.getenv("api_key")
-MODEL: str = os.getenv("model")
+from .executor import CommandExecutor
+from logger import get_logger
 
-def send_message(self, message: str, save_history: bool = True) -> str|None:
+log = get_logger(__name__)
+
+load_dotenv()
+API_KEY: str = os.getenv("API_KEY")
+MODEL: str = os.getenv("MODEL")
+VOICE_ACTOR: str = os.getenv("VOICE_ACTOR")
+
+def send_message(message: str, save_history: bool = True) -> str|None:
     try:
         client = OpenAI(
             base_url="https://openrouter.ai/api/v1",
             api_key=API_KEY,
         )
 
-        parent_dir = Path(__file__).resolve().parent
+        parent_dir = Path(__file__).resolve().parents[1]
         instruction_path = parent_dir / "instruction.txt"
 
         with instruction_path.open('r') as file:
@@ -33,11 +39,10 @@ def send_message(self, message: str, save_history: bool = True) -> str|None:
     except Exception as e:
         return f"An error occured while connecting: {e}"
 
-
-async def speak(self, text: str):
-    tts_file = "miko_voice.mp3"
+async def speak(text: str):
+    tts_file = "rikka_voice.mp3"
     try:
-        communicate = edge_tts.Communicate(text=text, voice=self.voice_character)
+        communicate = edge_tts.Communicate(text=text, voice=VOICE_ACTOR)
         await communicate.save(tts_file)
 
         pygame.mixer.music.load(tts_file)
@@ -52,6 +57,7 @@ async def speak(self, text: str):
     except Exception as e:
         print(f"An error occured while trying to play sound: {e}")
 
+executor = CommandExecutor()
 def execute_command(raw_text, depth: int = 0):
     if depth > 5:
         return
@@ -59,7 +65,7 @@ def execute_command(raw_text, depth: int = 0):
     clean_text, cmds = executor.extract_commands(raw_text)
 
     if clean_text:
-        print(f"Miko: {clean_text}")
+        print(f"Rikka: {clean_text}")
         asyncio.run(speak(clean_text))
 
     if cmds:

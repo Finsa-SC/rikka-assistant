@@ -1,1 +1,1 @@
-from processing import speak
+from .processing import speak, send_message, execute_command
