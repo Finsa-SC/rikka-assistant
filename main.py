@@ -1,4 +1,4 @@
-import asyncio, os, pygame
+import asyncio, pygame
 
 from logger import get_logger
 from application import speak, send_message, execute_command
@@ -12,7 +12,6 @@ class Assistant:
     @staticmethod
     def start_talking():
         print("Welcome a board, master!")
-        # asyncio.run(self.speak("Welcome a board, Master!. All systems online"))
         asyncio.run(speak("Selamat datang kembali master!. All systems online"))
 
         while (user_input := input("Send message: ")) != "q":
