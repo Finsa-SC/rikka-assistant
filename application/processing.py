@@ -3,27 +3,46 @@ from time import sleep
 import edge_tts, pygame, asyncio, os
 from dotenv import load_dotenv
 
+from ai_models.gemini import use_gemini
 from .executor import CommandExecutor
 from logger import get_logger
-from ai_models import use_openrouter
+from ai_models import use_openrouter, use_ollama
 
 log = get_logger(__name__)
 
 load_dotenv()
+PROVIDER: str = os.getenv("PROVIDER")
 API_KEY: str = os.getenv("API_KEY")
-MODEL: str = os.getenv("MODEL")
+MODEL: str = os.getenv("MODEL", None)
 VOICE_ACTOR: str = os.getenv("VOICE_ACTOR")
 
-def send_message(message: str) -> str|None:
+def send_message(message: str, role: str = "user") -> str|None:
     try:
-        response = use_openrouter(
-            message,
-            model=MODEL,
-            api_key=API_KEY
-        )
+        match PROVIDER:
+            case "openrouter":
+                response = use_openrouter(
+                    message,
+                    model=MODEL,
+                    api_key=API_KEY
+                )
+            case "ollama":
+                response = use_ollama(
+                    message,
+                    model=MODEL,
+                    role=role
+                )
+            case "gemini":
+                response = use_gemini(
+                    message,
+                    model=MODEL,
+                    api_key=API_KEY,
+                )
+            case _:
+                raise ValueError(f"Invalid provider got: {PROVIDER}")
 
         return response
     except Exception as e:
+        raise
         return f"An error occured while connecting: {e}"
 
 async def speak(text: str):
