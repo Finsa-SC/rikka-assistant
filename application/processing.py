@@ -42,7 +42,6 @@ def send_message(message: str, role: str = "user") -> str|None:
 
         return response
     except Exception as e:
-        raise
         return f"An error occured while connecting: {e}"
 
 async def speak(text: str):
@@ -80,7 +79,10 @@ def execute_command(raw_text, depth: int = 0):
             log.info(f"Command request: {cmd}")
             output = executor.execute_commands(cmd)
 
-            exec_results.append(f"Result of '{cmd}':\n{output}")
+            exec_results.append(
+                f"Mode: {cmd['mode']}\n"
+                f"Result: {output}"
+            )
 
         system_feedback = f"[SYSTEM_FEEDBACK]\n" + "\n".join(exec_results)
         log.info("Send feedback to ai")

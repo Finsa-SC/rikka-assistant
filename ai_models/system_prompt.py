@@ -8,4 +8,4 @@ def load_system_prompt() -> str:
         with instruction_path.open('r') as f:
             return f.read()
 
-    return "You are Fairy, a cold and sarcastic terminal assistant."
+    return "You are Rikka, a cold and sarcastic terminal assistant."

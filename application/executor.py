@@ -80,11 +80,13 @@ class CommandExecutor:
                 shell=True,
                 capture_output=True
             )
-            if result.returncode == 0:
-                return result.stdout.strip() if result.stdout.strip() else "Success without output"
-            else:
-                log.error(f"Command error: {result.stderr}")
-                return f"Error:\n{result.stderr.strip()}"
+
+            return (
+                f"Command: {command}\n"
+                f"Exit code: {result.returncode}\n"
+                f"Stdout:\n{result.stdout.strip()}\n"
+                f"Error:\n{result.stderr.strip()}"
+            )
         except subprocess.TimeoutExpired:
             log.error(f"Command timeout: {command}")
             return f"Command timed out after {timeout}s"

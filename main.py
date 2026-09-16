@@ -1,26 +1,47 @@
 import asyncio, pygame
-
+import time
+import threading
 from logger import get_logger
 from application import speak, send_message, execute_command
+from monitoring.system import monitor
 
 log = get_logger("Main")
 
 class Assistant:
     def __init__(self):
         pygame.mixer.init()
+        self.process_lock = threading.Lock()
 
-    @staticmethod
-    def start_talking():
+    def __process(self, message: str):
+        with self.process_lock:
+            raw_reply = send_message(message)
+            execute_command(raw_reply)
+
+    def monitoring_loop(self):
+        while True:
+            event = monitor()
+
+            if event:
+                self.__process(f"[SYSTEM_TROUBLE]\n{event}")
+
+            time.sleep(60)
+
+    def start_talking(self):
         print("Welcome a board, master!")
         asyncio.run(speak("Selamat datang kembali master!. All systems online"))
+
+        threading.Thread(
+            target=self.monitoring_loop,
+            daemon=True
+        ).start()
 
         while (user_input := input("Send message: ")) != "q":
             try:
                 if not user_input.strip():
                     continue
 
-                raw_reply = send_message(user_input)
-                execute_command(raw_reply)
+                self.__process(user_input)
+
             except (Exception, EOFError) as e:
                 print("See you later, master!")
                 print(f"{e}")
