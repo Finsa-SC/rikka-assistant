@@ -3,7 +3,7 @@ import time
 import threading
 from logger import get_logger
 from application import speak, send_message, execute_command
-from monitoring.monitor import monitor
+from monitoring.monitor import polling_monitor, event_watcher
 
 log = get_logger("Main")
 
@@ -19,12 +19,18 @@ class Assistant:
 
     def monitoring_loop(self):
         while True:
-            event = monitor()
+            event = polling_monitor()
 
             if event:
                 self.__process(f"[SYSTEM_TROUBLE]\n{event}")
 
             time.sleep(60)
+
+    def event_watch(self):
+        event_watcher(self.handle_system_event)
+
+    def handle_system_event(self, event):
+        self.__process(f"[SYSTEM_TROUBLE]\n{event}")
 
     def start_talking(self):
         print("Welcome a board, master!")
@@ -32,6 +38,11 @@ class Assistant:
 
         threading.Thread(
             target=self.monitoring_loop,
+            daemon=True
+        ).start()
+
+        threading.Thread(
+            target=self.event_watch,
             daemon=True
         ).start()
 
