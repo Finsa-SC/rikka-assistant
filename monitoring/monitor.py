@@ -3,7 +3,7 @@ from monitoring.rules import (
     battery_check, late_night, long_uptime,
     insufficient_ram, cpu_pressure
 )
-from .cooldown import MonitorScheduler
+from monitoring.cooldown import MonitorScheduler
 import subprocess, json
 
 logger = get_logger("Monitor")
@@ -36,14 +36,20 @@ def polling_monitor():
             logger.info("Long uptime event detected")
             issues["long_uptime"] = uptime
 
-    if len(issues) >= 1:
+    if len(issues) > 1:
         logger.warning(f"Polling generated system event: {issues}")
         return issues
     return None
 
 def event_watcher(callback):
     process = subprocess.Popen(
-        ['journalctl', '-f', '-p', 'err', '-o', 'json'],
+        [
+            'journalctl',
+            '-f',
+            '-n', '0',
+            '-p', 'err',
+            '-o', 'json'
+        ],
         stdout=subprocess.PIPE,
         text=True,
         bufsize=1,
@@ -53,4 +59,15 @@ def event_watcher(callback):
         entry = json.loads(line)
 
         logger.warning(f"System error detected: {entry.get('MESSAGE')}")
-        callback(entry)
+
+        error_message = {
+            'type': 'journal_error',
+            'severity': 'err',
+            'message': entry.get('MESSAGE'),
+            'source': {
+                'identifier': entry.get('SYSLOG_IDENTIFIER'),
+                'process': entry.get('_COMM'),
+                'pid': entry.get('_PID'),
+            }
+        }
+        callback(error_message)
