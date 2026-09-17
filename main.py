@@ -3,7 +3,7 @@ import time
 import threading
 from logger import get_logger
 from application import speak, send_message, execute_command
-from monitoring.system import monitor
+from monitoring.monitor import monitor
 
 log = get_logger("Main")
 
