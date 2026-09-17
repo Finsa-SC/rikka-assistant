@@ -54,3 +54,4 @@ build/
 *.egg-info/
 logs/
 test.py
+audio/
