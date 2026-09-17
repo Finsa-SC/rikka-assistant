@@ -1,5 +1,5 @@
+import re
 from pathlib import Path
-from time import sleep
 import edge_tts, pygame, asyncio, os
 from dotenv import load_dotenv
 
@@ -12,8 +12,8 @@ log = get_logger(__name__)
 
 load_dotenv()
 PROVIDER: str = os.getenv("PROVIDER")
-API_KEY: str = os.getenv("API_KEY")
-MODEL: str = os.getenv("MODEL", None)
+API_KEY: str|None = os.getenv("API_KEY")
+MODEL: str = os.getenv("MODEL")
 VOICE_ACTOR: str = os.getenv("VOICE_ACTOR")
 
 def send_message(message: str, role: str = "user") -> str|None:
@@ -45,22 +45,42 @@ def send_message(message: str, role: str = "user") -> str|None:
         return f"An error occured while connecting: {e}"
 
 async def speak(text: str):
-    tts_file = "rikka_voice.mp3"
-    try:
-        communicate = edge_tts.Communicate(text=text, voice=VOICE_ACTOR)
-        await communicate.save(tts_file)
+    chunks = re.split(r'(?<=[.!?])\s+', text.strip())
+    queue = asyncio.Queue()
 
-        pygame.mixer.music.load(tts_file)
-        pygame.mixer.music.play()
+    async def generate():
+        for i, chunk in enumerate(chunks):
+            if chunk is None:
+                continue
 
-        while pygame.mixer.music.get_busy():
-            sleep(0.1)
+            filename = f"audio/rikka_voice_{i}.mp3"
 
-        if Path(tts_file).exists():
-            Path(tts_file).unlink()
+            communicate = edge_tts.Communicate(
+                text=chunk,
+                voice=VOICE_ACTOR
+            )
 
-    except Exception as e:
-        print(f"An error occured while trying to play sound: {e}")
+            await communicate.save(filename)
+            await queue.put(filename)
+        await queue.put(None)
+    async def play():
+        while True:
+            filename = await queue.get()
+
+            if filename is None:
+                break
+
+            pygame.mixer.music.load(filename)
+            pygame.mixer.music.play()
+
+            while pygame.mixer.music.get_busy():
+                await asyncio.sleep(0.1)
+
+            Path(filename).unlink(missing_ok=True)
+    await asyncio.gather(
+        generate(),
+        play()
+    )
 
 executor = CommandExecutor()
 def execute_command(raw_text, depth: int = 0):
@@ -70,7 +90,7 @@ def execute_command(raw_text, depth: int = 0):
     clean_text, cmds = executor.extract_commands(raw_text)
 
     if clean_text:
-        print(f"Rikka: {clean_text}")
+        print(f"\nRikka: {clean_text}")
         asyncio.run(speak(clean_text))
 
     if cmds:
