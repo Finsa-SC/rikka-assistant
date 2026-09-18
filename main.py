@@ -1,9 +1,7 @@
-import asyncio, pygame
-import time
-import threading
+import asyncio, pygame, threading
 from logger import get_logger
 from application import speak, send_message, execute_command
-from monitoring.monitor import polling_monitor, event_watcher
+from monitoring.event_queue import event_queue
 
 log = get_logger("Main")
 
@@ -17,36 +15,25 @@ class Assistant:
             raw_reply = send_message(message)
             execute_command(raw_reply)
 
-    def monitoring_loop(self):
+    def event_loop(self):
         while True:
-            event = polling_monitor()
+            event = event_queue.get()
 
-            if event:
-                self.__process(f"[SYSTEM_TROUBLE]\n{event}")
-
-            time.sleep(60)
-
-    def event_watch(self):
-        event_watcher(self.handle_system_event)
-
-    def handle_system_event(self, event):
-        self.__process(f"[SYSTEM_TROUBLE]\n{event}")
+            try:
+                self.__process(event)
+            finally:
+                event_queue.task_done()
 
     def start_talking(self):
         print("Welcome a board, master!")
         asyncio.run(speak("Selamat datang kembali master!. All systems online"))
 
         threading.Thread(
-            target=self.monitoring_loop,
+            target=self.event_loop(),
             daemon=True
         ).start()
 
-        threading.Thread(
-            target=self.event_watch,
-            daemon=True
-        ).start()
-
-        while (user_input := input("Send message: ")) != "q":
+        while (user_input := input("Send message: ")) != "\\q":
             try:
                 if not user_input.strip():
                     continue
