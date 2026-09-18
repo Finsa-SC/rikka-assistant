@@ -5,7 +5,7 @@ from monitoring.event_queue import event_queue
 
 logger = get_logger("JournalWatcher")
 
-def event_watcher():
+def journal_watcher():
     process = subprocess.Popen(
         [
             'journalctl',

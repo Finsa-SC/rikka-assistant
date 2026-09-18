@@ -1,0 +1,130 @@
+import imaplib, email, os, time
+from dotenv import load_dotenv
+
+from logger import get_logger
+from .event_queue import event_queue
+
+logger = get_logger("EmailWatcher")
+
+load_dotenv()
+
+EMAIL_HOST: str = os.getenv("EMAIL_HOST")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 993))
+EMAIL_USER: str = os.getenv("EMAIL_USER")
+EMAIL_PASSWORD: str = os.getenv("EMAIL_PASSWORD")
+
+def process_new_email(mail):
+    status, data = mail.search(
+        None,
+        "UNSEEN"
+    )
+
+    if status != "OK":
+        logger.error("Failed to search mailbox")
+        return
+
+    for num in data[0].split():
+        status, msg_data = mail.fetch(num, "(RFC822)")
+
+        if status != "OK":
+            logger.error(f"Failed to fetch email {num}")
+            continue
+
+        raw_email = msg_data[0][1]
+        msg = email.message_from_bytes(raw_email)
+
+        sender = msg.get("From")
+        subject = msg.get("Subject")
+        body = ""
+
+        if msg.is_multipart():
+            for part in msg.walk():
+                if part.get_content_type() == "text/plain":
+                    payload = part.get_payload(decode=True)
+
+                    if payload:
+                        body = payload.decode(
+                            errors="replace"
+                        )
+                    break
+        else:
+            payload = msg.get_payload(decode=True)
+
+            if payload:
+                body = payload.decode(
+                    errors="replace"
+                )
+
+        event = {
+            "type": "email_received",
+            "data": {
+                "from": sender,
+                "subject": subject,
+                "body": body,
+            }
+        }
+
+        logger.info(
+            f"New email: {sender} | {subject}"
+        )
+
+        event_queue.put(event)
+
+def email_watcher():
+    mail = imaplib.IMAP4_SSL(
+        EMAIL_HOST,
+        EMAIL_PORT
+    )
+
+    mail.login(
+        EMAIL_USER,
+        EMAIL_PASSWORD
+    )
+
+    mail.select("INBOX")
+
+    logger.info("Email watcher connected")
+
+    while True:
+        try:
+            tag = mail._new_tag()
+            mail.send(tag + b" IDLE\r\n")
+
+            response = mail.readline()
+
+            if not response.startswith(b"+"):
+                logger.error(f"Failed to enter IDLE: {response}")
+                continue
+            logger.info("Waiting for new email.")
+
+            response = mail.readline()
+
+            logger.info(f"IMAP event: {response!r}")
+
+            mail.send(b"DONE\r\n")
+            mail.readline()
+
+            process_new_email(mail)
+
+        except Exception as e:
+            logger.error(f"Email watcher error: {e}")
+
+            try:
+                mail.logout()
+            except Exception:
+                ...
+
+            time.sleep(10)
+
+            ## Reconnect
+            mail = imaplib.IMAP4_SSL(
+                EMAIL_HOST,
+                EMAIL_PORT,
+            )
+
+            mail.login(
+                EMAIL_USER,
+                EMAIL_PASSWORD,
+            )
+
+            mail.select("INBOX")
