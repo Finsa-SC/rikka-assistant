@@ -13,21 +13,25 @@ EMAIL_PORT = int(os.getenv("EMAIL_PORT", 993))
 EMAIL_USER: str = os.getenv("EMAIL_USER")
 EMAIL_PASSWORD: str = os.getenv("EMAIL_PASSWORD")
 
-def process_new_email(mail):
-    status, data = mail.search(
+def process_new_email(mail, last_uid: int):
+    status, data = mail.uid(
+        "search",
         None,
-        "UNSEEN"
+        f"UID {last_uid + 1}:*"
     )
-
     if status != "OK":
-        logger.error("Failed to search mailbox")
-        return
+        logger.error("Failed to search new email")
+        return last_uid
 
-    for num in data[0].split():
-        status, msg_data = mail.fetch(num, "(RFC822)")
+    for uid in data[0].split():
+        status, msg_data = mail.uid(
+            'fetch',
+            uid,
+            "(RFC822)"
+        )
 
         if status != "OK":
-            logger.error(f"Failed to fetch email {num}")
+            logger.error(f"Failed to fetch email {uid}")
             continue
 
         raw_email = msg_data[0][1]
@@ -68,7 +72,12 @@ def process_new_email(mail):
             f"New email: {sender} | {subject}"
         )
 
-        event_queue.put(event)
+        event_queue.put(
+            f"[SYSTEM_MESSAGE]\n{event}")
+
+        last_uid = int(uid)
+
+    return last_uid
 
 def email_watcher():
     mail = imaplib.IMAP4_SSL(
@@ -84,6 +93,24 @@ def email_watcher():
     mail.select("INBOX")
 
     logger.info("Email watcher connected")
+
+    status, data = mail.uid(
+        'search',
+        None,
+        'ALL'
+    )
+
+    if status != "OK":
+        logger.error("Failed to get latest email UID")
+        return
+
+    uids = data[0].split()
+    if uids:
+        last_uid = int(uids[-1])
+    else:
+        last_uid = 0
+
+    logger.info(f"Starting from UID {last_uid}")
 
     while True:
         try:
@@ -104,7 +131,7 @@ def email_watcher():
             mail.send(b"DONE\r\n")
             mail.readline()
 
-            process_new_email(mail)
+            last_uid = process_new_email(mail, last_uid)
 
         except Exception as e:
             logger.error(f"Email watcher error: {e}")
