@@ -92,7 +92,8 @@ def execute_command(raw_text, depth: int = 0):
         return
 
     # Add Rikka memory
-    memory.manage_memory(dict(role="assistant", content=raw_text))
+    if raw_text:
+        memory.manage_memory(dict(role="assistant", content=raw_text))
 
     if clean_text:
         print(f"\nRikka: {clean_text}")
