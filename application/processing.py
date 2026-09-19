@@ -89,6 +89,10 @@ def execute_command(raw_text, depth: int = 0):
 
     clean_text, cmds = executor.extract_commands(raw_text)
 
+    if clean_text and clean_text == "<SKIP>":
+        log.info("AI decide to skip response.")
+        return
+
     if clean_text:
         print(f"\nRikka: {clean_text}")
         asyncio.run(speak(clean_text))
