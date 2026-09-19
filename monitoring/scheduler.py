@@ -42,7 +42,8 @@ class Scheduler:
             json.dump(
                 self.schedules,
                 f,
-                indent=4
+                indent=4,
+                default=lambda obj: obj.isoformat()
             )
         self.load()
 
@@ -50,19 +51,28 @@ class Scheduler:
         self.load()
 
         while True:
+            now = datetime.now().astimezone()
+
             for schedule in self.schedules:
+                schedule_id = schedule['id']
                 schedule_data = schedule['data']
-                if schedule['run_at'] == datetime.now():
+                run_at = datetime.fromisoformat(schedule_data['run_at'])
+                message = schedule_data['message']
+                repeat = schedule_data['repeat']
+
+                if now >= run_at:
                     event = {
                         'type': 'times up',
                         'severity': 'info',
                         'data': {
-                            'run_at': schedule_data['run_at'],
-                            'message': schedule_data['message'],
-                            'repeat': schedule_data['repeat'],
+                            'run_at': run_at,
+                            'message': message,
+                            'repeat': repeat,
                         }
                     }
                     event_queue.put(event)
+                    self.remove(schedule_id)
+
             time.sleep(60)
 
 scheduler = Scheduler()

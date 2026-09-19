@@ -1,32 +1,49 @@
-import re
-import subprocess
+import re, json, subprocess
+from datetime import datetime
 from time import sleep
 
 from logger import get_logger
+from monitoring import Scheduler
 
 log = get_logger("Executor")
 
 class CommandExecutor:
-    def __init__(self):
+    def __init__(self, schedule: Scheduler):
+        self.scheduler = schedule
+
         self.denied_command = ["rm", "shutdown", "reboot", "poweroff", "mkfs", "dd"]
         self.fg_pattern = r"<RUN>([\s\S]+?)<\/RUN>"
         self.bg_pattern = r"<SPAWN>([\s\S]+?)<\/SPAWN>"
+        self.schedule_pattern = r"<SCHEDULE>([\s\S]+?)<\/SCHEDULE>"
 
-    def extract_commands(self, text: str) -> tuple[str, list[str]]:
+    def extract_commands(self, text: str) -> tuple[str, list[dict]]:
         if not text:
             return "", []
 
         fg_cmds = re.findall(self.fg_pattern, text)
         bg_cmds = re.findall(self.bg_pattern, text)
+        schedule_cmds = re.findall(self.schedule_pattern, text)
 
         clean_text = re.sub(self.fg_pattern, "", text)
         clean_text = re.sub(self.bg_pattern, "", clean_text).strip()
+        clean_text = re.sub(self.schedule_pattern,"",clean_text).strip()
 
         command = []
         for cmd in fg_cmds:
-            command.append({"cmd": cmd.strip(), "mode": "foreground"})
+            command.append({
+                "cmd": cmd.strip(),
+                "mode": "foreground"
+            })
         for cmd in bg_cmds:
-            command.append({"cmd": cmd.strip(), "mode": "background"})
+            command.append({
+                "cmd": cmd.strip(),
+                "mode": "background"
+            })
+        for schedule in schedule_cmds:
+            command.append({
+                "cmd": schedule.strip(),
+                "mode": "schedule"
+            })
 
         return clean_text, command
 
@@ -39,6 +56,9 @@ class CommandExecutor:
     def execute_commands(self, cmd_obj: dict) -> str:
         command = cmd_obj["cmd"]
         mode = cmd_obj.get("mode", "foreground")
+
+        if mode == "schedule":
+            return self._schedule(command)
 
         if not self.filter_commands(command):
             log.warning(f"Forbidden executing: {command}")
@@ -97,19 +117,16 @@ class CommandExecutor:
             log.error(f"Error: {e}")
             return f"Error: {e}"
 
-if __name__ == "__main__":
-    executor = CommandExecutor()
+    def _schedule(self, command: str):
+        try:
+            json_data = json.loads(command)
+            data = json_data['data']
 
-    # Contoh teks tiruan dari respon Nino
-    sample_ai_response = "I will check the kernel version first [!<uname -a>], then I will clean the log directory [!<rm -rf /var/log/test.log>]"
+            run_at = datetime.fromisoformat(data['run_at'])
+            message = data['message']
+            repeat = data.get('repeat')
 
-    print("=== TEST EXTRAK ===")
-    c_text, cmds = executor.extract_commands(sample_ai_response)
-    print(f"Clean Text: {c_text}")
-    print(f"Extracted Commands: {cmds}\n")
-
-    print("=== TEST EKSEKUSI ===")
-    for c in cmds:
-        print(f"Executing '{c}'...")
-        output = executor.execute_commands(c)
-        print(f"Result:\n{output}\n")
+            self.scheduler.add(run_at, message, repeat)
+        except (json.JSONDecodeError, KeyError, ValueError) as e:
+            log.error(f"Invalid schedule: {e}")
+            return f"Invalid schedule: {e}"

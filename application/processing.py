@@ -2,6 +2,7 @@ import re
 from pathlib import Path
 import edge_tts, pygame, asyncio
 
+from monitoring import scheduler
 from .executor import CommandExecutor
 from logger import get_logger
 from providers import use_openrouter, use_ollama, use_gemini, memory
@@ -89,7 +90,7 @@ async def speak(text: str):
         play()
     )
 
-executor = CommandExecutor()
+executor = CommandExecutor(scheduler)
 def execute_command(raw_text, depth: int = 0):
     if depth > 5:
         logger.warning("The AI limit in using consecutive CMDs has run out")

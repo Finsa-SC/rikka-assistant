@@ -1,4 +1,4 @@
-from .scheduler import scheduler
+from .scheduler import scheduler, Scheduler
 from .monitor import polling_monitor
 from .event_queue import event_queue
 from .email_watcher import email_watcher
