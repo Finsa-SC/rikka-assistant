@@ -11,10 +11,13 @@ def use_gemini(message: list[dict[str,str]], api_key: str, model: str) -> str:
     )
     contents = []
     for msg in message:
+        if msg['role'] == 'system':
+            continue
+
         contents.append(
             types.Content(
-                role=msg['role'],
-                parts=[types.Part.from_text(msg['content'])]
+                role='model' if msg['role'] == 'assistant' else msg['role'],
+                parts=[types.Part(msg['content'])]
             )
         )
 

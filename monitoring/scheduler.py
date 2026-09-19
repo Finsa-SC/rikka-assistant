@@ -70,7 +70,10 @@ class Scheduler:
                             'repeat': repeat,
                         }
                     }
-                    event_queue.put(event)
+                    event_queue.put(
+                        f"[SYSTEM_SCHEDULE]\n"
+                        f"reminder: {event}"
+                    )
                     self.remove(schedule_id)
 
             time.sleep(60)
