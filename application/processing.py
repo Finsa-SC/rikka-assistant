@@ -14,32 +14,42 @@ def send_message(message_str: str, role: str = "user") -> str|None:
         memory.manage_memory(dict(role=role, content=message_str))
     message = memory.message
 
-    try:
-        match config.provider:
-            case "openrouter":
-                response = use_openrouter(
-                    message,
-                    model=config.model,
-                    api_key=config.api_key,
-                )
-            case "ollama":
-                response = use_ollama(
-                    message,
-                    model=config.model,
-                )
-            case "gemini":
-                response = use_gemini(
-                    message,
-                    model=config.model,
-                    api_key=config.api_key,
-                )
-            case _:
-                raise ValueError(f"Invalid provider got: {config.provider}")
+    for attempt in range(3):
+        try:
+            match config.provider:
+                case "openrouter":
+                    response = use_openrouter(
+                        message,
+                        model=config.model,
+                        api_key=config.api_key,
+                    )
+                case "ollama":
+                    response = use_ollama(
+                        message,
+                        model=config.model,
+                    )
+                case "gemini":
+                    response = use_gemini(
+                        message,
+                        model=config.model,
+                        api_key=config.api_key,
+                    )
+                case _:
+                    raise ValueError(f"Invalid provider got: {config.provider}")
 
-        return response
+            if response is not None:
+                return response
 
-    except Exception as e:
-        return f"An error occured while connecting: {e}"
+            logger.warning(
+                f"AI returned empty response, retrying "
+                f"({attempt+1}/3"
+            )
+
+        except Exception as e:
+            return f"An error occured while connecting: {e}"
+
+    logger.error("AI Failed to return a response after 3 attempts")
+    return None
 
 async def speak(text: str):
     chunks = re.split(r'(?<=[.!?])\s+', text.strip())

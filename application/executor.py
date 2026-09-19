@@ -14,7 +14,6 @@ class CommandExecutor:
 
     def extract_commands(self, text: str) -> tuple[str, list[str]]:
         if not text:
-            log.warning("Empty AI response received")
             return "", []
 
         fg_cmds = re.findall(self.fg_pattern, text)
