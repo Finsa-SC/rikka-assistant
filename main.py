@@ -24,7 +24,7 @@ class Assistant:
 
             try:
                 self.__process(event)
-                memory.manage_memory(event)
+                memory.manage_memory(dict(role='system', content=event))
             finally:
                 event_queue.task_done()
 

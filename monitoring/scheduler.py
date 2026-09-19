@@ -2,9 +2,11 @@ import json, string, random
 import time
 from datetime import datetime
 
+from logger import get_logger
 from monitoring.event_queue import event_queue
 from utils.path import resolve_parent_path
 
+logger = get_logger('Scheduler')
 
 class Scheduler:
     def __init__(self):
@@ -70,6 +72,9 @@ class Scheduler:
                             'repeat': repeat,
                         }
                     }
+
+                    logger.info(f"Schedule trigger for {schedule_id}")
+
                     event_queue.put(
                         f"[SYSTEM_SCHEDULE]\n"
                         f"reminder: {event}"
