@@ -1,17 +1,10 @@
-import imaplib, email, os, time
-from dotenv import load_dotenv
+import imaplib, email, time
 
 from logger import get_logger
 from .event_queue import event_queue
+from config import config
 
 logger = get_logger("EmailWatcher")
-
-load_dotenv()
-
-EMAIL_HOST: str = os.getenv("EMAIL_HOST")
-EMAIL_PORT = int(os.getenv("EMAIL_PORT", 993))
-EMAIL_USER: str = os.getenv("EMAIL_USER")
-EMAIL_PASSWORD: str = os.getenv("EMAIL_PASSWORD")
 
 def process_new_email(mail, last_uid: int):
     status, data = mail.uid(
@@ -81,13 +74,13 @@ def process_new_email(mail, last_uid: int):
 
 def email_watcher():
     mail = imaplib.IMAP4_SSL(
-        EMAIL_HOST,
-        EMAIL_PORT
+        config.email_host,
+        config.email_port
     )
 
     mail.login(
-        EMAIL_USER,
-        EMAIL_PASSWORD
+        config.email_user,
+        config.email_password
     )
 
     mail.select("INBOX")
@@ -145,13 +138,13 @@ def email_watcher():
 
             ## Reconnect
             mail = imaplib.IMAP4_SSL(
-                EMAIL_HOST,
-                EMAIL_PORT,
+                config.email_host,
+                config.email_port,
             )
 
             mail.login(
-                EMAIL_USER,
-                EMAIL_PASSWORD,
+                config.email_user,
+                config.email_password,
             )
 
             mail.select("INBOX")

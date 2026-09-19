@@ -9,7 +9,6 @@ voice_actor = "id-ID-GadisNeural"
 enabled = true
 max_message = 10
 
-
 [email]
 email_host = "imap.gmail.com"
 email_port = "993"

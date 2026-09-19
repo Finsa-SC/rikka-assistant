@@ -5,6 +5,7 @@ from monitoring.journal_watcher import journal_watcher
 from monitoring.email_watcher import email_watcher
 from monitoring.event_queue import event_queue
 from monitoring.monitor import polling_monitor
+from providers import memory
 
 log = get_logger("Main")
 
@@ -24,6 +25,7 @@ class Assistant:
 
             try:
                 self.__process(event)
+                memory.manage_memory(event)
             finally:
                 event_queue.task_done()
 

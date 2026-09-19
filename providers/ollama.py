@@ -1,7 +1,7 @@
 import ollama
-from ai_models.system_prompt import load_system_prompt
+from providers.system_prompt import load_system_prompt
 
-def use_ollama(message: str, model: str="qwen2.5-coder:7b", role: str = "user") -> str:
+def use_ollama(message: list[dict[str,str]], model: str="qwen2.5-coder:7b", role: str = "user") -> str:
     response = ollama.chat(
         model=model,
         messages=[
@@ -9,10 +9,7 @@ def use_ollama(message: str, model: str="qwen2.5-coder:7b", role: str = "user") 
                 'role': 'system',
                 'content': load_system_prompt()
             },
-            {
-                'role': role,
-                'content': message
-            }
+            *message
         ]
     )
 
