@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from pathlib import Path
 import edge_tts, pygame, asyncio
 
@@ -13,7 +14,16 @@ logger = get_logger(__name__)
 def send_message(message_str: str, role: str = "user") -> str|None:
     if config.memory_enabled:
         memory.manage_memory(dict(role=role, content=message_str))
-    message = memory.message
+
+    timestamp = datetime.now().astimezone().isoformat()
+
+    message = [
+        {
+            "role": "system",
+            "content": f"Current time: {timestamp}"
+        },
+        *memory.message
+    ]
 
     for attempt in range(3):
         try:
