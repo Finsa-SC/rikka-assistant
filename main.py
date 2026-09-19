@@ -3,10 +3,7 @@ import asyncio, pygame, threading
 from config import config
 from logger import get_logger
 from application import speak, send_message, execute_command
-from monitoring.journal_watcher import journal_watcher
-from monitoring.email_watcher import email_watcher
-from monitoring.event_queue import event_queue
-from monitoring.monitor import polling_monitor
+from monitoring import polling_monitor, scheduler, event_queue, email_watcher, journal_watcher
 from providers import memory
 
 log = get_logger("Main")
@@ -41,6 +38,7 @@ class Assistant:
                 threading.Thread(target=self.event_loop, daemon=True),
                 threading.Thread(target=journal_watcher, daemon=True),
                 threading.Thread(target=polling_monitor, daemon=True),
+                threading.Thread(target=scheduler.run, daemon=True),
             ]
 
             for thread in threads:

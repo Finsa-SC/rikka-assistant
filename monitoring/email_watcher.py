@@ -54,6 +54,7 @@ def process_new_email(mail, last_uid: int):
 
         event = {
             "type": "email_received",
+            'severity': 'info',
             "data": {
                 "from": sender,
                 "subject": subject,
