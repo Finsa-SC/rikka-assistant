@@ -7,6 +7,7 @@ from monitoring.rules import (
     insufficient_ram, cpu_pressure
 )
 from monitoring.cooldown import MonitorScheduler
+from config import config
 
 logger = get_logger("Monitor")
 
@@ -42,4 +43,4 @@ def polling_monitor() -> None:
         logger.warning(f"Polling generated system event: {issues}")
         event_queue.put(f"[SYSTEM_TROUBLE]\n{issues}")
 
-    sleep(60)
+    sleep(config.monitor_interval)

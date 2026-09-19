@@ -16,6 +16,10 @@ class AIConfig:
     email_host:     str = "imap.gmail.com"
     email_port:     int = 993
 
+    # Monitor
+    monitor_enabled: bool = False
+    monitor_interval: int = 60
+
     # Memory
     memory_enabled: bool = False
     max_message: int     = 10
@@ -26,13 +30,17 @@ with get_config_path().open('rb') as f:
     conf = tomllib.load(f)
 
 model_conf = conf['model']
-model_memory_conf = conf['model']['memory']
+monitor_conf = conf['monitor']
 email_conf = conf['email']
+model_memory_conf = conf['model']['memory']
 
 config = AIConfig(
     provider=model_conf.get('provider'),
     model=model_conf.get('model'),
     voice_actor=model_conf.get('voice_actor'),
+
+    monitor_enabled=monitor_conf.get('enabled'),
+    monitor_interval=monitor_conf.get('interval'),
 
     email_host=email_conf.get('email_host'),
     email_port=email_conf.get('email_port'),

@@ -26,7 +26,6 @@ def send_message(message_str: str, role: str = "user") -> str|None:
                 response = use_ollama(
                     message,
                     model=config.model,
-                    role=role
                 )
             case "gemini":
                 response = use_gemini(
