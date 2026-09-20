@@ -8,22 +8,26 @@ class AIConfig:
     # Model
     provider:   str
     model:      str
-
     voice_actor:str
+
     # Email
     email_user:     str
     email_password: str
     email_host:     str = "imap.gmail.com"
-
     email_port:     int = 993
+
     # Monitor
     monitor_enabled: bool = False
-
     monitor_interval: int = 60
+
     # Memory
     memory_enabled: bool = False
-
     max_message: int     = 10
+
+    # Executor
+    command_timeouts : dict[str,int]|None = None
+    default_timeout  : int = 60
+
     max_command_depth: int = 5
     api_key: str|None = None
     account_id: str|None = None
@@ -35,6 +39,7 @@ with get_config_path().open('rb') as f:
 model_conf = conf['model']
 monitor_conf = conf['monitor']
 email_conf = conf['email']
+execute_conf = conf['executor']
 model_memory_conf = conf['model']['memory']
 
 # Model
@@ -53,6 +58,8 @@ email_password = email_conf.get('email_password')
 # Memory
 memory_enabled = model_memory_conf.get('enabled', False)
 max_message = model_memory_conf.get('max_message', 10)
+# Executr
+default_timeout = execute_conf.get('default_timeout', 60)
 # Cred
 api_key = model_conf.get('api_key')
 account_id = model_conf.get('account_id')
@@ -80,6 +87,9 @@ def validate_config():
     if provider in ['cloudflare'] and account_id is None:
         raise ValueError(f"Provider {provider} required account id")
 
+    if not isinstance(default_timeout, int) or (isinstance(default_timeout, int) and default_timeout < 0):
+        raise ValueError("Invalid default timeout for executor")
+
 validate_config()
 
 config = AIConfig(
@@ -94,6 +104,9 @@ config = AIConfig(
     email_port=email_port,
     email_user=email_user,
     email_password=email_password,
+
+    command_timeouts=execute_conf.get('timeouts'),
+    default_timeout=default_timeout,
 
     memory_enabled=memory_enabled,
     max_message=max_message,

@@ -2,6 +2,7 @@ import re, json, subprocess
 from datetime import datetime
 from time import sleep
 
+from config import config
 from logger import get_logger
 from monitoring import Scheduler
 
@@ -123,22 +124,14 @@ class CommandExecutor:
         command_splited = command_str.strip().split()
 
         if not command_splited:
-            return 60
+            return config.default_timeout
 
         if command_splited[0].lower() == "sudo" and len(command_splited) >= 2:
             command = command_splited[1].lower()
         else:
             command = command_splited[0].lower()
 
-        timeouts = {
-            'pacman': 600,
-            'yay': 600,
-            'paru': 600,
-            'docker': 600,
-            'git': 300,
-        }
-
-        return timeouts.get(command, 60)
+        return config.command_timeouts.get(command, config.default_timeout)
 
     def _schedule(self, command: str):
         try:
