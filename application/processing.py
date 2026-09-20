@@ -4,9 +4,10 @@ from pathlib import Path
 import edge_tts, pygame, asyncio
 
 from monitoring import scheduler
+from providers.system_prompt import load_system_prompt
 from .executor import CommandExecutor
 from logger import get_logger
-from providers import use_openrouter, use_ollama, use_gemini, memory
+from providers import use_openrouter, use_ollama, use_gemini, memory, use_xai, use_groq
 from config import config
 
 logger = get_logger(__name__)
@@ -18,6 +19,10 @@ def send_message(message_str: str, role: str = "user") -> str|None:
     timestamp = datetime.now().astimezone().isoformat()
 
     message = [
+        {
+            'role': 'system',
+            'content': load_system_prompt()
+        },
         {
             "role": "system",
             "content": f"Current time: {timestamp}"
@@ -44,6 +49,18 @@ def send_message(message_str: str, role: str = "user") -> str|None:
                         message,
                         model=config.model,
                         api_key=config.api_key,
+                    )
+                case "xai":
+                    response = use_xai(
+                        message,
+                        model=config.model,
+                        api_key=config.api_key
+                    )
+                case "groq":
+                    response = use_groq(
+                        message,
+                        model=config.model,
+                        api_key=config.api_key
                     )
                 case _:
                     raise ValueError(f"Invalid provider got: {config.provider}")
@@ -102,7 +119,7 @@ async def speak(text: str):
 
 executor = CommandExecutor(scheduler)
 def execute_command(raw_text, depth: int = 0):
-    if depth > 5:
+    if depth > config.max_command_depth:
         logger.warning("The AI limit in using consecutive CMDs has run out")
         return
 

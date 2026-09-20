@@ -30,7 +30,7 @@ class Assistant:
 
     def start_talking(self):
         print("Welcome a board, master!")
-        asyncio.run(speak("Selamat datang kembali master!. All systems online"))
+        asyncio.run(speak("Welcome a board master! All systems online"))
 
         if config.monitor_enabled:
             threads = [
