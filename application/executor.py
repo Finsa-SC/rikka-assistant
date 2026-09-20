@@ -119,8 +119,16 @@ class CommandExecutor:
             return f"Error: {e}"
 
     @staticmethod
-    def _get_timeout(command: str) -> int:
-        first_word = command.strip().split()[0].lower()
+    def _get_timeout(command_str: str) -> int:
+        command_splited = command_str.strip().split()
+
+        if not command_splited:
+            return 60
+
+        if command_splited[0].lower() == "sudo" and len(command_splited) >= 2:
+            command = command_splited[1].lower()
+        else:
+            command = command_splited[0].lower()
 
         timeouts = {
             'pacman': 600,
@@ -130,7 +138,7 @@ class CommandExecutor:
             'git': 300,
         }
 
-        return timeouts.get(first_word, 60)
+        return timeouts.get(command, 60)
 
     def _schedule(self, command: str):
         try:
