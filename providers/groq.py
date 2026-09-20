@@ -8,6 +8,8 @@ def use_groq(message: list[dict[str,str]], model: str, api_key: str) -> str:
     response = client.chat.completions.create(
         model=model,
         messages=message,
+        tool_choice="none",
+        reasoning_effort='low'
     )
 
     return response.choices[0].message.content
