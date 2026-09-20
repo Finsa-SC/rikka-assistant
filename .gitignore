@@ -55,4 +55,5 @@ build/
 logs/
 test.py
 audio/
+data/*
 config.toml

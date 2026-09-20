@@ -2,7 +2,7 @@ from time import sleep
 
 from logger import get_logger
 from monitoring.event_queue import event_queue
-from monitoring.rules import (
+from monitoring.system_polling import (
     battery_check, late_night, long_uptime,
     insufficient_ram, cpu_pressure
 )

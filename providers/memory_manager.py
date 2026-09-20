@@ -3,9 +3,10 @@ from config import config
 class MemoryManager:
     def __init__(self, max_memory: int = 0):
         self.message = []
+        self.max_message = max_memory
 
     def should_delete_oldest_message(self) -> bool:
-        return len(self.message) >= 10
+        return len(self.message) >= max_message
 
     def remove_oldest_message(self):
         if self.should_delete_oldest_message():

@@ -54,6 +54,7 @@ def process_new_email(mail, last_uid: int):
 
         event = {
             "type": "email_received",
+            'severity': 'info',
             "data": {
                 "from": sender,
                 "subject": subject,
@@ -85,7 +86,7 @@ def email_watcher():
 
     mail.select("INBOX")
 
-    logger.info("Email watcher connected")
+    logger.debug("Email watcher connected")
 
     status, data = mail.uid(
         'search',
@@ -103,7 +104,7 @@ def email_watcher():
     else:
         last_uid = 0
 
-    logger.info(f"Starting from UID {last_uid}")
+    logger.debug(f"Starting from UID {last_uid}")
 
     while True:
         try:
@@ -115,7 +116,7 @@ def email_watcher():
             if not response.startswith(b"+"):
                 logger.error(f"Failed to enter IDLE: {response}")
                 continue
-            logger.info("Waiting for new email.")
+            logger.debug("Waiting for new email.")
 
             response = mail.readline()
 

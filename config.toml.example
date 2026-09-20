@@ -1,13 +1,18 @@
 [model]
 provider = "openrouter" #openrouter, gemini, ollama
-model = "cohere/north-mini-code:free"
 voice_actor = "id-ID-GadisNeural"
+model = "cohere/north-mini-code:free"
+max_command_depth = 10
 
 # api_key = ""
 
 [model.memory]
 enabled = true
 max_message = 10
+
+[monitor]
+enabled = true
+interval = 60
 
 [email]
 email_host = "imap.gmail.com"
