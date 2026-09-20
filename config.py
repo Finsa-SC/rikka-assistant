@@ -26,6 +26,7 @@ class AIConfig:
     max_message: int     = 10
     max_command_depth: int = 5
     api_key: str|None = None
+    account_id: str|None = None
 
 
 with get_config_path().open('rb') as f:
@@ -52,6 +53,9 @@ email_password = email_conf.get('email_password')
 # Memory
 memory_enabled = model_memory_conf.get('enabled', False)
 max_message = model_memory_conf.get('max_message', 10)
+# Cred
+api_key = model_conf.get('api_key')
+account_id = model_conf.get('account_id')
 
 def validate_config():
     if not provider and not model and not voice_actor and not email_user and not email_password:
@@ -67,6 +71,14 @@ def validate_config():
 
     if not isinstance(max_command_depth, int) or (isinstance(max_command_depth, int) and max_command_depth < 0):
         raise ValueError("Invalid value for max command depth in config")
+
+    # Check api key
+    if provider != 'ollama' and api_key is None:
+        raise ValueError(f"Provider {provider} required api key to process response")
+
+    # Check account id
+    if provider in ['cloudflare'] and account_id is None:
+        raise ValueError(f"Provider {provider} required account id")
 
 validate_config()
 
@@ -88,4 +100,5 @@ config = AIConfig(
 
     max_command_depth=max_command_depth,
     api_key=model_conf.get('api_key'),
+    account_id=model_conf.get('account_id')
 )

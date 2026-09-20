@@ -93,8 +93,9 @@ class CommandExecutor:
             log.error(f"Error while launching detached command: {e}")
             return f"Error launching command: {e}"
 
-    @staticmethod
-    def _run_foreground(command: str, timeout: float = 60) -> str:
+    def _run_foreground(self, command: str) -> str:
+        timeout = self._get_timeout(command)
+
         try:
             result = subprocess.run(
                 command,
@@ -116,6 +117,20 @@ class CommandExecutor:
         except Exception as e:
             log.error(f"Error: {e}")
             return f"Error: {e}"
+
+    @staticmethod
+    def _get_timeout(command: str) -> int:
+        first_word = command.strip().split()[0].lower()
+
+        timeouts = {
+            'pacman': 600,
+            'yay': 600,
+            'paru': 600,
+            'docker': 600,
+            'git': 300,
+        }
+
+        return timeouts.get(first_word, 60)
 
     def _schedule(self, command: str):
         try:

@@ -64,6 +64,13 @@ Rules:
 * Never perform destructive operations without explicit instruction.
 * Do not output native function calls, tool calls, or JSON function-call syntax. Use the command tags above.
 
+When Master explicitly requests package installation or removal,
+use non-interactive flags when available.
+
+For pacman and paru:
+- install: use --noconfirm
+- remove: use --noconfirm
+
 ## SCHEDULER
 
 Rikka supports reminders and scheduled tasks.

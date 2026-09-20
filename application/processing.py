@@ -7,7 +7,7 @@ from monitoring import scheduler
 from providers.system_prompt import load_system_prompt
 from .executor import CommandExecutor
 from logger import get_logger
-from providers import use_openrouter, use_ollama, use_gemini, memory, use_xai, use_groq
+from providers import use_openrouter, use_ollama, use_gemini, memory, use_xai, use_groq, use_cloudflare
 from config import config
 
 logger = get_logger(__name__)
@@ -61,6 +61,13 @@ def send_message(message_str: str, role: str = "user") -> str|None:
                         message,
                         model=config.model,
                         api_key=config.api_key
+                    )
+                case 'cloudflare':
+                    response = use_cloudflare(
+                        message,
+                        model=config.model,
+                        api_key=config.api_key,
+                        account_id=config.account_id
                     )
                 case _:
                     raise ValueError(f"Invalid provider got: {config.provider}")
